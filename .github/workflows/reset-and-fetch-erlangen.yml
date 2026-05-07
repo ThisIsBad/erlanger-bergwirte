@@ -1,0 +1,106 @@
+name: Reset dev branch and fetch erlangen.de
+
+on:
+  push:
+    paths:
+      - '.github/workflows/reset-and-fetch-erlangen.yml'
+  workflow_dispatch:
+
+jobs:
+  go:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Fetch erlangen.de keller-bergkirchweih
+        run: |
+          set -euo pipefail
+          mkdir -p docs/research/erlangen
+          UA="Mozilla/5.0 (compatible; BergwirteResearchBot/1.0; +https://github.com/ThisIsBad/erlanger-bergwirte) Chrome/120"
+          curl -fL -A "$UA" -H "Accept-Language: de-DE,de;q=0.9,en;q=0.8" --max-time 30 \
+            "https://erlangen.de/aktuelles/keller-bergkirchweih" \
+            -o docs/research/erlangen/keller-bergkirchweih.html
+          ls -lh docs/research/erlangen/
+
+      - name: Auto-extract reservation links per keller
+        run: |
+          python3 - <<'PY'
+          import re, json
+          with open("docs/research/erlangen/keller-bergkirchweih.html", encoding="utf-8", errors="replace") as f:
+              html = f.read()
+
+          KNOWN = [
+              "Entla", "Erich", "Hübner", "Niklas", "Hofbräu", "Steinbach",
+              "Henninger", "Altstädter Schießhaus", "Striezi", "Tucher",
+              "Hartmann", "Weller", "Helbig", "Birkner", "Goldmann",
+          ]
+
+          # Try to find <h2/h3> sections per keller and the first link inside or right after
+          out = {}
+
+          # Strategy 1: each headline mentioning a keller gets the first <a href> following until the next headline
+          headings = list(re.finditer(
+              r'<(h[1-4])[^>]*>(.*?)</\1>', html, re.DOTALL | re.IGNORECASE))
+          for i, m in enumerate(headings):
+              text = re.sub(r'<[^>]+>', ' ', m.group(2))
+              text = re.sub(r'\s+', ' ', text).strip()
+              matched = next((k for k in KNOWN if k.lower() in text.lower()), None)
+              if not matched:
+                  continue
+              start = m.end()
+              end = headings[i+1].start() if i+1 < len(headings) else len(html)
+              section = html[start:end]
+              # find a link that looks like a reservation/booking URL
+              candidates = re.findall(r'href="(https?://[^"]+)"', section)
+              chosen = None
+              for url in candidates:
+                  low = url.lower()
+                  if any(s in low for s in ("reserv", "buchen", "ticket", "bookatable", "opentable", "resmio", "bookingkit", "formular")):
+                      chosen = url
+                      break
+              if chosen is None and candidates:
+                  # fall back: any link that contains the keller name in the URL
+                  for url in candidates:
+                      if matched.lower() in url.lower() or matched.lower().replace("ü", "u").replace("ä", "a").replace("ö", "o") in url.lower():
+                          chosen = url
+                          break
+              if chosen is None and candidates:
+                  chosen = candidates[0]
+              if chosen:
+                  out.setdefault(text, {"matched_keller": matched, "reservation": chosen, "all_links": candidates[:8]})
+
+          # Strategy 2: scan <li>/<p> blocks that contain a keller name and a link
+          for m in re.finditer(r'<(li|p)[^>]*>(.*?)</\1>', html, re.DOTALL | re.IGNORECASE):
+              block_text = re.sub(r'<[^>]+>', ' ', m.group(2))
+              block_text = re.sub(r'\s+', ' ', block_text).strip()
+              matched = next((k for k in KNOWN if k.lower() in block_text.lower()), None)
+              if not matched:
+                  continue
+              urls = re.findall(r'href="(https?://[^"]+)"', m.group(2))
+              if not urls:
+                  continue
+              # prefer reservation-style URL
+              chosen = next((u for u in urls if any(s in u.lower() for s in ("reserv", "buchen", "ticket", "bookatable", "opentable", "resmio", "bookingkit"))), urls[0])
+              # Don't overwrite a stronger heading match
+              key = f"li:{block_text[:80]}"
+              out.setdefault(key, {"matched_keller": matched, "reservation": chosen, "all_links": urls[:8]})
+
+          with open("docs/research/erlangen/extracted.json", "w", encoding="utf-8") as f:
+              json.dump(out, f, ensure_ascii=False, indent=2)
+
+          print(json.dumps(out, ensure_ascii=False, indent=2)[:6000])
+          PY
+
+      - name: Force-update dev branch to main + research commit
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -B claude/general-troubleshooting-SI4T6
+          git add docs/research
+          git commit -m "Reset dev branch to main; fetch erlangen.de keller links"
+          git push --force origin claude/general-troubleshooting-SI4T6

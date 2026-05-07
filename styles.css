@@ -1,4 +1,4 @@
-/* Erlanger Bergwirte – Vereinsseite, an bergwirte.de orientiert.
+/* Erlanger Bergwirte – Inhalte gespiegelt von bergwirte.de.
    System fonts only. Palette: Kastanienblatt-Grün, Bierbraun, Lampion-Gold, Papier-Creme. */
 
 :root {
@@ -18,7 +18,7 @@
                Helvetica, Arial, sans-serif;
   --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
 
-  --wrap: 1080px;
+  --wrap: 1120px;
   --pad: clamp(1rem, 2.5vw, 1.75rem);
   --radius: 12px;
   --radius-sm: 6px;
@@ -83,23 +83,35 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
   top: 1rem;
 }
 
+.visually-hidden {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.icon {
+  width: 18px;
+  height: 18px;
+  display: block;
+  fill: currentColor;
+}
+
 /* ---------- Header ---------- */
 
 .site-header {
-  position: sticky;
-  top: 0;
-  z-index: 50;
-  background: rgba(250, 246, 236, 0.94);
-  backdrop-filter: saturate(140%) blur(6px);
-  -webkit-backdrop-filter: saturate(140%) blur(6px);
+  background: var(--creme);
   border-bottom: 1px solid var(--line);
 }
-
 .site-header__inner {
   display: flex;
   align-items: center;
   gap: 1rem;
   min-height: 64px;
+  flex-wrap: wrap;
 }
 
 .brand {
@@ -124,78 +136,28 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
   line-height: 1;
 }
 .brand__text {
-  display: grid;
-  line-height: 1.05;
   font-family: var(--font-serif);
+  font-size: 19px;
+  font-weight: 700;
 }
-.brand__line1 { font-size: 13px; color: var(--ink-soft); letter-spacing: 0.04em; text-transform: uppercase; }
-.brand__line2 { font-size: 19px; font-weight: 700; }
 
-.nav ul {
+.socials {
   display: flex;
-  gap: 1.4rem;
+  gap: 0.4rem;
 }
-.nav a {
-  text-decoration: none;
-  color: var(--ink);
-  font-weight: 500;
-  padding: 0.4rem 0;
-  border-bottom: 2px solid transparent;
-}
-.nav a:hover { border-bottom-color: var(--gold-deep); }
-
-.burger {
-  display: none;
-  flex-direction: column;
-  justify-content: space-between;
+.socials a {
+  display: grid;
+  place-items: center;
   width: 36px;
-  height: 28px;
-  padding: 4px;
-  background: transparent;
-  border: 1px solid var(--line);
-  border-radius: 6px;
-  cursor: pointer;
+  height: 36px;
+  border-radius: 8px;
+  color: var(--ink);
+  text-decoration: none;
+  transition: background-color .15s ease, color .15s ease;
 }
-.burger__bar {
-  display: block;
-  height: 2px;
-  background: var(--ink);
-  border-radius: 2px;
-  transition: transform .2s ease, opacity .2s ease;
-}
-.burger[aria-expanded="true"] .burger__bar:nth-child(1) { transform: translateY(8px) rotate(45deg); }
-.burger[aria-expanded="true"] .burger__bar:nth-child(2) { opacity: 0; }
-.burger[aria-expanded="true"] .burger__bar:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
-
-@media (max-width: 760px) {
-  .burger { display: flex; }
-  .nav {
-    position: absolute;
-    top: 64px; left: 0; right: 0;
-    background: var(--creme);
-    border-bottom: 1px solid var(--line);
-    box-shadow: 0 12px 24px -12px rgba(42, 31, 21, 0.18);
-    transform: translateY(-12px);
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity .2s ease, transform .2s ease;
-  }
-  .nav[data-open="true"] {
-    opacity: 1;
-    transform: translateY(0);
-    pointer-events: auto;
-  }
-  .nav ul {
-    flex-direction: column;
-    gap: 0;
-    padding: 0.5rem var(--pad) 1rem;
-  }
-  .nav a {
-    display: block;
-    padding: 0.85rem 0;
-    border-bottom: 1px solid var(--line);
-  }
-  .nav li:last-child a { border-bottom: 0; }
+.socials a:hover {
+  background: var(--green);
+  color: var(--creme);
 }
 
 /* ---------- Hero ---------- */
@@ -209,34 +171,11 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
   text-align: center;
 }
 .hero__inner { max-width: 60ch; margin-inline: auto; }
-
-.hero__eyebrow {
-  display: inline-block;
-  margin: 0 0 1rem;
-  padding: 0.32rem 0.85rem;
-  font-size: 0.78rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  background: var(--green);
-  color: var(--creme);
-  border-radius: 999px;
-  font-weight: 600;
-}
-
 .hero__title {
   font-size: clamp(2rem, 5.5vw, 3.4rem);
-  margin: 0 0 0.6rem;
+  margin: 0 0 0.8rem;
   line-height: 1.05;
 }
-
-.hero__dates {
-  font-size: clamp(1.05rem, 2vw, 1.3rem);
-  color: var(--brown-deep);
-  font-weight: 600;
-  letter-spacing: 0.01em;
-  margin: 0 0 1rem;
-}
-
 .hero__lede {
   color: var(--ink-soft);
   font-size: 1.05rem;
@@ -247,25 +186,12 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 
 section { padding-block: clamp(2.5rem, 5vw, 4rem); }
 
-.section-head {
-  margin: 0 0 1.6rem;
-  max-width: 60ch;
-}
-.section-head h2 {
-  font-size: clamp(1.55rem, 3vw, 2.1rem);
-  margin: 0 0 0.4rem;
-}
-.section-head p {
-  margin: 0;
-  color: var(--ink-soft);
-}
-
-/* ---------- Wirte: cards with art header ---------- */
+/* ---------- Wirte: cards ---------- */
 
 .wirte-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1.1rem;
 }
 
 .card {
@@ -307,25 +233,71 @@ section { padding-block: clamp(2.5rem, 5vw, 4rem); }
 .card:nth-child(4n+4) .card__art { background-color: var(--green-deep); }
 
 .card__body {
-  padding: 0.9rem 1rem 1.05rem;
+  padding: 1rem 1.1rem 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  flex: 1;
 }
 .card__body h3 {
   font-size: 1.1rem;
-  margin: 0 0 0.18rem;
+  margin: 0;
+  text-align: center;
 }
-.card__body p {
+.card__pitch {
   margin: 0;
   font-size: 0.92rem;
   color: var(--ink-soft);
+  line-height: 1.5;
+  text-align: center;
 }
 
-/* ---------- Brauereien: smaller cards on tinted band ---------- */
+.links {
+  display: flex;
+  gap: 0.4rem;
+  justify-content: center;
+  margin-top: auto;
+}
+.links a {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  background: var(--green);
+  color: var(--creme);
+  text-decoration: none;
+  transition: background-color .15s ease;
+}
+.links a:hover { background: var(--green-deep); }
+.links .icon { width: 16px; height: 16px; }
+
+.card__cta {
+  display: block;
+  padding: 0.75rem 1rem;
+  background: var(--ink);
+  color: var(--creme);
+  font-weight: 600;
+  font-size: 0.92rem;
+  text-align: center;
+  text-decoration: none;
+  transition: background-color .15s ease;
+}
+.card__cta:hover { background: var(--brown-deep); color: var(--creme); }
+
+/* ---------- Brauereien ---------- */
 
 .brauereien { background: var(--creme-deep); }
 
+.brauereien__title {
+  text-align: center;
+  font-size: clamp(1.55rem, 3vw, 2.1rem);
+  margin: 0 0 1.6rem;
+}
+
 .brauereien-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 1rem;
 }
 
@@ -334,30 +306,61 @@ section { padding-block: clamp(2.5rem, 5vw, 4rem); }
   border: 1px solid var(--line);
   border-left: 4px solid var(--gold);
   border-radius: var(--radius-sm);
-  padding: 1rem 1.15rem 1.05rem;
+  padding: 1.1rem 1.2rem 1.05rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 .brauerei h3 {
-  font-size: 1.05rem;
-  margin: 0 0 0.2rem;
+  font-size: 1.1rem;
+  margin: 0;
+  text-align: center;
 }
-.brauerei p {
+.brauerei__pitch {
   margin: 0;
   font-size: 0.92rem;
   color: var(--ink-soft);
+  text-align: center;
+  line-height: 1.5;
 }
 
-/* ---------- Kontakt ---------- */
+/* ---------- Berg-Links (große Buttons) ---------- */
 
-.kontakt__addr {
-  font-style: normal;
-  line-height: 1.7;
-  color: var(--ink-soft);
+.berg-links { background: var(--creme); }
+.berg-links__inner {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
 }
+
+.btn {
+  display: inline-block;
+  padding: 0.95rem 1.6rem;
+  font: inherit;
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform .15s ease, background-color .15s ease, color .15s ease;
+  min-width: 200px;
+  text-align: center;
+}
+.btn:active { transform: translateY(1px); }
+.btn--primary {
+  background: var(--green);
+  color: var(--creme);
+  border-color: var(--green-deep);
+}
+.btn--primary:hover { background: var(--green-deep); color: var(--creme); }
 
 /* ---------- Footer ---------- */
 
 .site-footer {
-  margin-top: clamp(2rem, 4vw, 3rem);
   background: #1f1810;
   color: rgba(250, 246, 236, 0.78);
   font-size: 0.9rem;
@@ -366,16 +369,30 @@ section { padding-block: clamp(2.5rem, 5vw, 4rem); }
 .site-footer a:hover { color: var(--creme); }
 
 .site-footer__inner {
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 0.5rem 1.5rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  align-items: center;
+  gap: 1rem;
   padding-block: 1.5rem;
 }
-.site-footer p { margin: 0; }
-.site-footer__legal-note {
-  color: rgba(250, 246, 236, 0.55);
-  font-style: italic;
+.site-footer__inner > * { margin: 0; }
+.site-footer__globe {
+  display: inline-grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  color: var(--gold);
+  justify-self: start;
+}
+.site-footer__legal { text-align: center; }
+.site-footer__copy { text-align: right; }
+
+@media (max-width: 640px) {
+  .site-footer__inner { grid-template-columns: 1fr; text-align: center; }
+  .site-footer__globe { justify-self: center; }
+  .site-footer__legal,
+  .site-footer__copy { text-align: center; }
 }
 
 /* ---------- Reduced motion ---------- */

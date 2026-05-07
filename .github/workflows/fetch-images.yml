@@ -1,0 +1,55 @@
+name: Bergwirte-Bilder ziehen
+
+on:
+  push:
+    paths:
+      - '.github/workflows/fetch-images.yml'
+  workflow_dispatch:
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download Bilder von bergwirte.de
+        run: |
+          set -euo pipefail
+          mkdir -p images/keller images/brauereien
+
+          # Keller
+          curl -fL -o images/keller/erich.webp        "https://bergwirte.de/wp-content/themes/yootheme/cache/d2/erichkeller-d244d62d.webp"
+          curl -fL -o images/keller/steinbach.webp    "https://bergwirte.de/wp-content/themes/yootheme/cache/48/steinbach-48630f34.webp"
+          curl -fL -o images/keller/henninger.webp    "https://bergwirte.de/wp-content/themes/yootheme/cache/cb/henninger-2-cb9563d1.webp"
+          curl -fL -o images/keller/entlas.webp       "https://bergwirte.de/wp-content/themes/yootheme/cache/e1/entlass-e1fef2e4.webp"
+          curl -fL -o images/keller/weller.webp       "https://bergwirte.de/wp-content/themes/yootheme/cache/b5/Berg-Kachel-Weller-Keller-05.2023-b5bdf2cf.webp"
+          curl -fL -o images/keller/striezi.webp      "https://bergwirte.de/wp-content/themes/yootheme/cache/43/Berg-Kachel-Tucher-Keller-05.2023-43304b81.webp"
+          curl -fL -o images/keller/niklas.webp       "https://bergwirte.de/wp-content/themes/yootheme/cache/f8/niklaskeller-f81b8ffb.webp"
+          curl -fL -o images/keller/hofbrau.webp      "https://bergwirte.de/wp-content/themes/yootheme/cache/b4/hofbrau-b45e6dd2.webp"
+          curl -fL -o images/keller/helbig.webp       "https://bergwirte.de/wp-content/themes/yootheme/cache/2c/helbig-2cb92e05.webp"
+          curl -fL -o images/keller/hartmanns.webp    "https://bergwirte.de/wp-content/themes/yootheme/cache/6e/Berg-Kachel-Hartmanns-Keller-05.2023-6e6957c2.webp"
+          curl -fL -o images/keller/birkners.webp     "https://bergwirte.de/wp-content/themes/yootheme/cache/cb/birkner_neu-cbff6832.webp"
+          curl -fL -o images/keller/schiesshaus.webp  "https://bergwirte.de/wp-content/themes/yootheme/cache/8a/schiesshaus-8a53c98c.webp"
+          curl -fL -o images/keller/huebners.webp     "https://bergwirte.de/wp-content/themes/yootheme/cache/5d/huebner-5d07e072.webp"
+
+          # Brauerei-Logos
+          curl -fL -o images/brauereien/kitzmann.webp    "https://bergwirte.de/wp-content/themes/yootheme/cache/f0/Kitzmann-Logo-Web-White-2026-f0b58f40.webp"
+          curl -fL -o images/brauereien/tucher.webp      "https://bergwirte.de/wp-content/themes/yootheme/cache/28/Tucher-Logo-Web-White-2026-28624163.webp"
+          curl -fL -o images/brauereien/moenchshof.webp  "https://bergwirte.de/wp-content/themes/yootheme/cache/3f/Moenchshof-Logo-Web-White-2026-3fac3d3e.webp"
+          curl -fL -o images/brauereien/erlangen.webp    "https://bergwirte.de/wp-content/themes/yootheme/cache/1a/Erlangen-Berg-Logo-Web-2026-1a2d1e02.webp"
+
+          ls -lh images/keller images/brauereien
+
+      - name: Commit und push
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add images
+          if git diff --staged --quiet; then
+            echo "Nichts zu committen."
+            exit 0
+          fi
+          git commit -m "Add keller and brauerei images from bergwirte.de"
+          git push

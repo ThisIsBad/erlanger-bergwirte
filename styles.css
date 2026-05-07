@@ -141,25 +141,6 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
   font-weight: 700;
 }
 
-.socials {
-  display: flex;
-  gap: 0.4rem;
-}
-.socials a {
-  display: grid;
-  place-items: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
-  color: var(--ink);
-  text-decoration: none;
-  transition: background-color .15s ease, color .15s ease;
-}
-.socials a:hover {
-  background: var(--green);
-  color: var(--creme);
-}
-
 /* ---------- Hero ---------- */
 
 .hero {

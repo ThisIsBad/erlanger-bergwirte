@@ -1,0 +1,16 @@
+{
+  "li:Henninger Keller Hier der Reservierungs-Link: Henninger Altstädter Schließhaus H": {
+    "matched_keller": "Erich",
+    "reservation": "https://www.henninger-keller.com/reservierungsanfrage",
+    "all_links": [
+      "https://www.henninger-keller.com/reservierungsanfrage",
+      "https://www.altstaedter-schiesshaus.de/bergkirchweih/",
+      "https://www.erich-keller.net/reservierung/",
+      "https://www.erich-keller.net/reservierung/",
+      "https://steinbach-braeu.de/kontakt/",
+      "https://www.helbigkeller.info/",
+      "https://alterbrunnen.bergplatz.de/",
+      "https://www.birkners-keller.de/"
+    ]
+  }
+}
